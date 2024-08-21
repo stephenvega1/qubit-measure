@@ -1,0 +1,29 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from qiskit import QuantumCircuit, Aer, transpile, assemble
+from qiskit.visualization import plot_bloch_multivector
+
+# Function to create a radar-like signal using qubits
+def create_radar_signal(num_qubits):
+    qc = QuantumCircuit(num_qubits)
+    for qubit in range(num_qubits):
+        qc.h(qubit)  # Apply Hadamard gate to create superposition
+        qc.rz(np.pi/4, qubit)  # Apply a rotation around the Z-axis
+    return qc
+
+# Number of qubits
+num_qubits = 10
+
+# Create the radar signal
+qc = create_radar_signal(num_qubits)
+
+# Simulate the quantum circuit
+simulator = Aer.get_backend('statevector_simulator')
+compiled_circuit = transpile(qc, simulator)
+qobj = assemble(compiled_circuit)
+result = simulator.run(qobj).result()
+statevector = result.get_statevector()
+
+# Visualize the qubits using Bloch spheres
+plot_bloch_multivector(statevector)
+plt.show()
